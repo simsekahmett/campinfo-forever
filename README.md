@@ -1,0 +1,63 @@
+# Camp Info Forever
+
+<p align="center"><img src="Media/logo.png" alt="Camp Info Forever logo" width="200"></p>
+
+A World of Warcraft Forever addon (Interface 16001). When you reach a player-built camp, it shows which camp features are active and the buff each one gives you.
+
+## Camp features it knows
+
+| Feature | Buff | Buff spell ID |
+|---|---|---|
+| Lodestone | Melee Attack Power | 1230164 |
+| First Aid Kit | Stamina | 1230124 |
+| Sharpening Wheel | Strength | 1230172 |
+| Incense Candle | Intellect | 1229513 |
+| Faction Banner | Spirit | 1229718 |
+| Camp Chair | Critical strike chance (%) | 1229519 |
+| Fish Bowl | All stats (%) | 1230098 |
+| Enchanted Lute | Armor, all attributes, all resistances | 1230653 |
+| Mana Well | Mana every 5 sec | 1230587 |
+| Violet Flames (campfire) | Campfire effects last longer | 1328362 and others |
+
+The IDs come from the game's own data: the **Camp Benefits** aura (1229741) lists these features in its tooltip.
+
+## How it works
+- At a camp you get the Camp Benefits aura. The addon reads its tooltip, so the panel shows the real numbers for your level, such as "Lodestone: Melee Attack Power increased by 20".
+- It also checks each feature's buff by spell ID, in case the tooltip cannot be read.
+- The panel opens on its own when you reach a camp, or when a new feature starts giving you a buff. It closes when you leave.
+- It also lists, greyed out, the features this camp does not have, unless "Show only available buffs" is on.
+- If the tooltip shows a feature the addon does not know yet, it is still listed.
+
+## Sharing in chat
+- **Share** button on the panel: posts the camp's active features to your chosen channel, for example `[Camp Info] Ruins of Lordaeron: Faction Banner (Spirit +14); Camp Chair (Crit Chance +2%) | 53 Min left`.
+- **Ask for missing** button: posts the features this camp lacks and asks if anyone can build them.
+- Share channel: automatic (raid > party > say), party, raid, guild or /say. The buttons can use /say because they are clicked.
+- Optional: announce the camp to your group when you arrive (group channels only, at most once every 5 minutes per place).
+- Optional: answer a whispered `!camp` with the camp info.
+
+## Settings
+General: open on arrival, also in capital cities, show only available buffs, auto-hide and its delay (5 to 60 seconds).
+Appearance: panel size (70% to 150%), compact mode, lock position, sound on arrival.
+Chat and sharing: print to your own chat, announce to group, `!camp` replies, share channel.
+
+The panel opens on its own only at camps out in the world: not in capital cities (unless you turn that on), dungeons or raids.
+
+## Commands
+- `/cif` show or hide the panel
+- `/cif options` open the settings
+- `/cif reset` reset the panel position
+- `/cif debug` print your buffs and the Camp Benefits text to chat, to help add new features
+
+## Languages
+English, Türkçe, Deutsch, Français, Español, Português (BR), Русский, Italiano, 한국어, 简体中文, 繁體中文. Feature and buff names come from the game, in your client's language.
+
+## Install
+Install it from [CurseForge](https://www.curseforge.com/), or copy this folder to `World of Warcraft\_forever_\Interface\AddOns\CampInfoForever`.
+
+## Releasing
+Releases are built by [BigWigsMods/packager](https://github.com/BigWigsMods/packager) in GitHub Actions (`.github/workflows/release.yml`).
+
+1. One time: create an API token at https://legacy.curseforge.com/account/api-tokens and add it to the GitHub repository as the secret `CF_API_TOKEN`.
+2. Push a tag: `git tag v1.4.0` then `git push origin v1.4.0`.
+
+The workflow puts the tag into `## Version`, builds the zip without the files listed in `.pkgmeta`, and uploads it to CurseForge project 1824945 and to GitHub Releases. A tag containing `alpha` or `beta` is uploaded as an alpha or beta file.

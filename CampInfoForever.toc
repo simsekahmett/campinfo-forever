@@ -1,0 +1,29 @@
+## Interface: 16001
+## Title: |cffffb040Camp Info|r Forever
+## Notes: At a WoW Forever camp, shows which camp features are active (Lodestone, First Aid Kit, Camp Chair...) and the buff each gives. /cif
+## Notes-trTR: WoW Forever kampında hangi kamp özelliklerinin açık olduğunu (Lodestone, First Aid Kit, Camp Chair...) ve verdikleri buffları gösterir. /cif
+## Notes-deDE: Zeigt im WoW-Forever-Lager, welche Einrichtungen aktiv sind und welchen Buff jede gibt. /cif
+## Notes-frFR: Dans un camp WoW Forever, montre les éléments actifs et le buff de chacun. /cif
+## Notes-esES: En un campamento de WoW Forever, muestra los elementos activos y el beneficio de cada uno. /cif
+## Notes-esMX: En un campamento de WoW Forever, muestra los elementos activos y el beneficio de cada uno. /cif
+## Notes-ptBR: Num acampamento do WoW Forever, mostra os itens ativos e o bônus de cada um. /cif
+## Notes-ruRU: В лагере WoW Forever показывает активные объекты и эффект каждого. /cif
+## Notes-itIT: In un accampamento di WoW Forever, mostra gli elementi attivi e il beneficio di ciascuno. /cif
+## Notes-koKR: WoW Forever 야영지에서 활성화된 시설과 각 시설의 강화 효과를 보여 줍니다. /cif
+## Notes-zhCN: 在 WoW Forever 营地中显示生效的设施及其增益。/cif
+## Notes-zhTW: 在 WoW Forever 營地中顯示生效的設施及其增益。/cif
+## Author: simsekahmett
+## Version: @project-version@
+## SavedVariables: CampInfoForeverDB
+## IconTexture: Interface\AddOns\CampInfoForever\Media\Logo64
+## Category: Map
+## X-Category: Map
+## X-Curse-Project-ID: 1824945
+## X-Website: https://github.com/simsekahmett/campinfo-forever
+## AddonCompartmentFunc: CampInfoForever_OnCompartmentClick
+## DefaultState: enabled
+
+Locale.lua
+Core.lua
+Panel.lua
+Options.lua
