@@ -4,6 +4,16 @@
 
 A World of Warcraft Forever addon (Interface 16001). When you reach a player-built camp, it shows which camp features are active and the buff each one gives you.
 
+<p align="center"><img src="Media/Screenshots/panel.png" alt="The Camp panel at a camp in Durotar"></p>
+
+Point at a camp object to see the buff it gives:
+
+<p align="center">
+  <img src="Media/Screenshots/tooltip-incense-candle.png" alt="Incense Candle tooltip">
+  <img src="Media/Screenshots/tooltip-mana-well.png" alt="Mana Well tooltip">
+  <img src="Media/Screenshots/tooltip-lodestone.png" alt="Lodestone tooltip">
+</p>
+
 ## Camp features it knows
 
 | Feature | Buff | Buff spell ID |
@@ -17,6 +27,7 @@ A World of Warcraft Forever addon (Interface 16001). When you reach a player-bui
 | Fish Bowl | All stats (%) | 1230098 |
 | Enchanted Lute | Armor, all attributes, all resistances | 1230653 |
 | Mana Well | Mana every 5 sec | 1230587 |
+| Campfire (Campfire Nearby buff) | Opens the panel | 1283391 |
 | Violet Flames (campfire) | Campfire effects last longer | 1328362 and others |
 
 The IDs come from the game's own data: the **Camp Benefits** aura (1229741) lists these features in its tooltip.
@@ -24,21 +35,27 @@ The IDs come from the game's own data: the **Camp Benefits** aura (1229741) list
 ## How it works
 - At a camp you get the Camp Benefits aura. The addon reads its tooltip, so the panel shows the real numbers for your level, such as "Lodestone: Melee Attack Power increased by 20".
 - It also checks each feature's buff by spell ID, in case the tooltip cannot be read.
-- The panel opens on its own when you reach a camp, or when a new feature starts giving you a buff. It closes when you leave.
+- The panel opens on its own when you get the Campfire Nearby buff or reach a camp, or when a new feature starts giving you a buff. It closes when you leave.
+- When you reach a campfire, the panel opens and asks you to sit by the fire for 1 minute. Until then the buffs on you are from your last camp, so the panel does not list them, and Share waits too.
+- While you sit, the panel counts down the minute until the camp's buffs arrive. Then it lists this camp's features.
+- Point your mouse at a camp object (Mana Well, Fish Bowl, ...) and its tooltip shows the buff it gives when you sit by the fire. The game does not tell addons which objects stand around a fire, so this is the way to see them before you sit. Each object you point at near the fire is also listed in the panel under "At this camp" until this camp's buffs arrive.
 - It also lists, greyed out, the features this camp does not have, unless "Show only available buffs" is on.
 - If the tooltip shows a feature the addon does not know yet, it is still listed.
 
 ## Sharing in chat
-- **Share** button on the panel: posts the camp's active features to your chosen channel, for example `[Camp Info] Ruins of Lordaeron: Faction Banner (Spirit +14); Camp Chair (Crit Chance +2%) | 53 Min left`.
+- **Share** button on the panel: posts the camp's active features to your chosen channel, for example `[Camp Info] Ruins of Lordaeron: Faction Banner (Spirit +14); Camp Chair (Crit Chance +2%) - 53 Min left`.
 - **Ask for missing** button: posts the features this camp lacks and asks if anyone can build them.
 - Share channel: automatic (raid > party > say), party, raid, guild or /say. The buttons can use /say because they are clicked.
-- Optional: announce the camp to your group when you arrive (group channels only, at most once every 5 minutes per place).
+- Optional: share the camp's buffs automatically when you get them, in the share channel you chose, for example `[Camp Info] Durotar: Lodestone (Melee Attack Power +12) / Mana Well (Mana every 5 sec +8)`. At most once every 5 minutes per place. The game only allows /say from a click, so with /say chosen the addon uses your group instead.
 - Optional: answer a whispered `!camp` with the camp info.
 
 ## Settings
+
+<p align="center"><img src="Media/Screenshots/options.png" alt="Camp Info Forever settings in the game's AddOns options" width="700"></p>
+
 General: open on arrival, also in capital cities, show only available buffs, auto-hide and its delay (5 to 60 seconds).
 Appearance: panel size (70% to 150%), compact mode, lock position, sound on arrival.
-Chat and sharing: print to your own chat, announce to group, `!camp` replies, share channel.
+Chat and sharing: print to your own chat, automatic share, `!camp` replies, share channel.
 
 The panel opens on its own only at camps out in the world: not in capital cities (unless you turn that on), dungeons or raids.
 

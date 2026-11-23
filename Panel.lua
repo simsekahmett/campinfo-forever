@@ -41,7 +41,8 @@ local function ScheduleHide(seconds)
 	hideTimer = C_Timer.NewTimer(seconds, function()
 		hideTimer = nil
 		if frame and frame:IsShown() then
-			if MouseIsOver(frame) then
+			-- Stay open over the mouse, and while the sitting countdown runs.
+			if MouseIsOver(frame) or ns.state.sitting then
 				ScheduleHide(3)
 			else
 				frame:Hide()
@@ -239,21 +240,40 @@ local function Layout(info)
 		add("dim", nil, L.NOT_IN_CAMP)
 	end
 
-	add("header", nil, L.FEATURES_ON, info.campStatus, { 0.8, 0.8, 0.8 })
-	if #info.active == 0 and #info.extras == 0 then
-		add("dim", nil, L.NONE_ACTIVE)
+	if info.sitting then
+		add("dim", nil, "|cffffd100" .. L.SITTING:format(info.sitting) .. "|r")
+	elseif ns.state.needsSit then
+		add("dim", nil, "|cffffd100" .. L.SIT_HINT .. "|r")
 	end
-	for _, r in ipairs(info.active) do
-		add("on", r.icon, line(r), r.status, { 0.3, 1, 0.3 }, r.spellId)
+	-- At a new campfire, the buffs on you are still from your last camp until you sit,
+	-- so list nothing until this camp's buffs arrive.
+	local waiting = ns.state.needsSit or (info.sitting ~= nil and not ns.state.campFresh)
+	local green = { 0.3, 1, 0.3 }
+
+	if not waiting then
+		add("header", nil, L.FEATURES_ON, info.campStatus, { 0.8, 0.8, 0.8 })
+		if #info.active == 0 and #info.extras == 0 then
+			add("dim", nil, L.NONE_ACTIVE)
+		end
+		for _, r in ipairs(info.active) do
+			add("on", r.icon, line(r), r.status, green, r.spellId)
+		end
+		for _, r in ipairs(info.extras) do
+			add("on", r.icon, line(r), L.ACTIVE, green)
+		end
 	end
-	for _, r in ipairs(info.extras) do
-		add("on", r.icon, line(r), L.ACTIVE, { 0.3, 1, 0.3 })
+	-- Before you sit: the objects you pointed at here, and what each will give.
+	if waiting and #info.seen > 0 then
+		add("header", nil, L.THIS_CAMP, nil, { 0.8, 0.8, 0.8 })
+		for _, r in ipairs(info.seen) do
+			add("on", r.icon, line(r), nil, green, r.spellId)
+		end
 	end
 	if info.violet then
 		add("on", info.violet.icon, line(info.violet), info.violet.status, { 0.75, 0.5, 1 }, info.violet.spellId)
 	end
 
-	if not ns.db.settings.onlyAvailable and #info.inactive > 0 then
+	if not waiting and not ns.db.settings.onlyAvailable and #info.inactive > 0 then
 		y = y - 6
 		add("header", nil, L.FEATURES_OFF)
 		for _, r in ipairs(info.inactive) do
@@ -274,7 +294,7 @@ local function Layout(info)
 	frame.missing:ClearAllPoints()
 	frame.missing:SetPoint("LEFT", frame.share, "RIGHT", 6, 0)
 	frame.missing:SetWidth(half)
-	local canShare = info.inCamp
+	local canShare = info.inCamp and not waiting
 	frame.share:SetEnabled(canShare)
 	frame.missing:SetEnabled(canShare)
 	y = y - 20
@@ -282,11 +302,27 @@ local function Layout(info)
 	frame:SetHeight(-y + PAD)
 end
 
+-- Ticks once a second while the sitting countdown is on the panel.
+local ticker
 function Panel.Refresh()
 	if not frame then
 		Create()
 	end
-	Layout(ns.Snapshot())
+	local info = ns.Snapshot()
+	Layout(info)
+	if info.sitting and not ticker then
+		ticker = C_Timer.NewTicker(1, function()
+			if frame:IsShown() then
+				Panel.Refresh()
+			elseif ticker then
+				ticker:Cancel()
+				ticker = nil
+			end
+		end)
+	elseif not info.sitting and ticker then
+		ticker:Cancel()
+		ticker = nil
+	end
 end
 
 function Panel.RefreshIfShown()
