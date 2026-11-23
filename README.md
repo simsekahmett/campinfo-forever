@@ -29,10 +29,23 @@ Point at a camp object to see the buff it gives:
 | Mana Well | Mana every 5 sec | 1230587 |
 | Campfire (Campfire Nearby buff) | Opens the panel | 1283391 |
 | Violet Flames (campfire) | Campfire effects last longer | 1328362 and others |
-| Camp Tent | Rested experience up to 5% of a level | read from 1307230 |
-| Tanning Rack | Same as Camp Tent (also for leatherworking reagents) | read from 1307395 |
-| Loom | Same as Faction Banner (also for tailoring recipes) | read from 1307255 |
-| Iron Oven | No buff: needed for advanced cooking recipes | read from 1307226 |
+
+Higher tier objects give the same buff as the basic one they replace:
+
+| Basic object | Higher tiers |
+|---|---|
+| Mana Well | Fermenter, Alchemy Laboratory |
+| Sharpening Wheel | Anvil, Master Forge |
+| Enchanted Lute | Arcane Salvager, Arcane Forge |
+| Incense Candle | Greenhouse, Seed Hybridizer |
+| Camp Tent (Rested experience up to 5% of a level) | Tanning Rack, Sewing Machine |
+| Lodestone | Rock Garden, Molten Foundry |
+| Camp Chair | Field Guide, Trapper's Workbench |
+| Faction Banner | Spinning Wheel, Loom |
+| First Aid Kit | Toxin Study, Plague Doctor's Laboratory |
+| Fish Bowl | Fishing Rack, Fishing Hut |
+
+Reagent Bot, Repair Bot, Anarchist's Workbench, Cookie's Feast and Iron Oven give no camp buff; their tooltips say what they are for.
 
 The IDs come from the game's own data: the **Camp Benefits** aura (1229741) lists these features in its tooltip.
 Tooltip texts come from the spell that builds each object (1307xxx), whose description gives the real value, for example "20 increased melee Attack Power" for a Lodestone.
@@ -47,6 +60,12 @@ Tooltip texts come from the spell that builds each object (1307xxx), whose descr
 - It also lists, greyed out, the features this camp does not have, unless "Show only available buffs" is on.
 - If the tooltip shows a feature the addon does not know yet, it is still listed.
 
+## Camps shared between players
+Camps you visit are shared with other players who use the addon, over a hidden chat channel (`CampInfoForever`): the camp's position, layer and objects. Before you sit, the panel lists what others saw at this fire with "Last seen: HH:MM". Away from camps, it lists up to five camps seen on your map. Nothing older than 15 minutes is shown, because fires and camp objects last 15 minutes. Other players can see that the messages come from your character. Turn it off with "Share camps I visit with other players of the addon".
+
+## Camps on the map
+Camps seen in the last 15 minutes are campfires on the world map, fading as they get older. Point at one for its objects, their buffs and when they were last seen. Opening a zone's map asks other players of the addon about its camps. On by default.
+
 ## Sharing in chat
 - **Share** button on the panel: posts the camp's active features to your chosen channel, for example `[Camp Info] Ruins of Lordaeron: Faction Banner (Spirit +14); Camp Chair (Crit Chance +2%) - 53 Min left`.
 - **Ask for missing** button: posts the features this camp lacks and asks if anyone can build them.
@@ -60,7 +79,7 @@ Tooltip texts come from the spell that builds each object (1307xxx), whose descr
 
 General: open on arrival, also in capital cities, show only available buffs, auto-hide and its delay (5 to 60 seconds).
 Appearance: panel size (70% to 150%), compact mode, lock position, sound on arrival.
-Chat and sharing: print to your own chat, automatic share, `!camp` replies, share channel.
+Chat and sharing: print to your own chat, automatic share, `!camp` replies, sharing camps with other players of the addon, camps on the map, share channel.
 
 The panel opens on its own only at camps out in the world: not in capital cities (unless you turn that on), dungeons or raids.
 

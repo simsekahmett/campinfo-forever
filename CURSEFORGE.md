@@ -30,6 +30,10 @@ No more hovering over the Camp Benefits buff and reading long tooltips.
 - **Share in chat.** One click posts the camp's buffs, or asks your group who can build the missing features.
 - **`!camp` replies (optional).** Anyone who whispers you `!camp` gets the camp info back.
 - **Automatic share (optional).** When the camp's buffs arrive, posts them in your share channel, for example *[Camp Info] Durotar: Lodestone (Melee Attack Power +12) / Mana Well (Mana every 5 sec +8)*. At most once every 5 minutes per place.
+- **Camps shared between players.** Camps you visit are shared with other players who use the addon, over a hidden chat channel (`CampInfoForever`): the camp's position, layer and objects. Before you sit, the panel lists what others saw at this fire with "Last seen: HH:MM". Away from camps, it lists up to five camps seen on your map. Nothing older than 15 minutes is shown, because fires and camp objects last 15 minutes. Other players can see that the messages come from your character. Turn it off with "Share camps I visit with other players of the addon".
+- **Camps on the map.** Camps seen in the last 15 minutes are campfires on the world map, fading as they get older. Point at one for its objects, their buffs and when they were last seen. Opening a zone's map asks other players of the addon about its camps. On by default.
+- **Class buff check.** An object's tooltip tells you when a class buff you have already gives its buff.
+- **Campfire size.** A campfire's tooltip shows how many camp features fit around it.
 - **Compact mode, panel scaling, position lock and arrival sound.**
 - **11 languages.**
 
@@ -46,11 +50,24 @@ No more hovering over the Camp Benefits buff and reading long tooltips.
 | Fish Bowl | All stats (%) |
 | Enchanted Lute | Armor, all attributes and all resistances |
 | Mana Well | Mana every 5 seconds |
-| Camp Tent | Rested experience up to 5% of a level |
-| Tanning Rack | Same as Camp Tent, and makes leatherworking reagents |
-| Loom | Same as Faction Banner, and is used for tailoring recipes |
-| Iron Oven | No buff, needed for advanced cooking recipes |
 | Violet Flames | Campfire effects last longer |
+
+Higher tier objects give the same buff as the basic one they replace:
+
+| Basic object | Higher tiers |
+|---|---|
+| Mana Well | Fermenter, Alchemy Laboratory |
+| Sharpening Wheel | Anvil, Master Forge |
+| Enchanted Lute | Arcane Salvager, Arcane Forge |
+| Incense Candle | Greenhouse, Seed Hybridizer |
+| Camp Tent (Rested experience up to 5% of a level) | Tanning Rack, Sewing Machine |
+| Lodestone | Rock Garden, Molten Foundry |
+| Camp Chair | Field Guide, Trapper's Workbench |
+| Faction Banner | Spinning Wheel, Loom |
+| First Aid Kit | Toxin Study, Plague Doctor's Laboratory |
+| Fish Bowl | Fishing Rack, Fishing Hut |
+
+Reagent Bot, Repair Bot, Anarchist's Workbench, Cookie's Feast and Iron Oven give no camp buff; their tooltips say what they are for.
 
 The addon also lists features it doesn't know yet, as long as the game shows them in the Camp Benefits tooltip.
 
@@ -73,7 +90,7 @@ Find them under *Options › AddOns › Camp Info Forever*:
 
 - **General:** open on arrival, also in capital cities, show only available buffs, auto-hide and its delay (5–60 seconds).
 - **Appearance:** panel size (70%–150%), compact mode, lock position, sound on arrival.
-- **Chat and sharing:** print to your own chat, automatic share, `!camp` replies, share channel (automatic, party, raid, guild or say).
+- **Chat and sharing:** print to your own chat, automatic share, `!camp` replies, sharing camps with other players of the addon, camps on the map, share channel (automatic, party, raid, guild or say).
 
 ## Languages
 

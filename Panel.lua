@@ -266,7 +266,13 @@ local function Layout(info)
 	if waiting and #info.seen > 0 then
 		add("header", nil, L.THIS_CAMP, nil, { 0.8, 0.8, 0.8 })
 		for _, r in ipairs(info.seen) do
-			add("on", r.icon, line(r), nil, green, r.spellId)
+			add("on", r.icon, line(r), r.status, { 0.8, 0.8, 0.8 }, r.spellId)
+		end
+	end
+	if #info.nearby > 0 then
+		add("header", nil, L.NEARBY_CAMPS)
+		for _, r in ipairs(info.nearby) do
+			add("on", "Interface\\Icons\\Spell_Fire_Fire", line(r), r.status, { 0.8, 0.8, 0.8 })
 		end
 	end
 	if info.violet then

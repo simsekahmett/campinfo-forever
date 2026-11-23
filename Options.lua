@@ -31,7 +31,7 @@ local function Header(text, y)
 	line:SetHeight(1)
 	line:SetPoint("LEFT", fs, "RIGHT", 8, 0)
 	line:SetPoint("RIGHT", panel, "RIGHT", -16, 0)
-	return y - 22
+	return y - 20
 end
 
 local function Check(label, key, y, onChange)
@@ -54,7 +54,7 @@ local function Check(label, key, y, onChange)
 	refreshers[#refreshers + 1] = function()
 		cb:SetChecked(ns.db.settings[key] and true or false)
 	end
-	return y - 26
+	return y - 24
 end
 
 local sliderCount = 0
@@ -101,7 +101,7 @@ local function Slider(key, minValue, maxValue, step, y, format, onChange)
 		slider:SetValue(ns.db.settings[key])
 		show(ns.db.settings[key])
 	end
-	return y - 50
+	return y - 44
 end
 
 local function Button(label, x, y, onClick)
@@ -145,7 +145,7 @@ function Options.Init()
 	desc:SetWordWrap(true)
 	desc:SetText(L.OPT_DESC)
 
-	local y = -72
+	local y = -66
 
 	-- General
 	y = Header(L.SEC_GENERAL, y)
@@ -174,6 +174,13 @@ function Options.Init()
 	y = Check(L.OPT_CHAT, "chat", y)
 	y = Check(L.OPT_ANNOUNCE, "announce", y)
 	y = Check(L.OPT_WHISPER, "whisperReply", y)
+	y = Check(L.OPT_NETWORK, "network", y, function()
+		ns.Comm.Apply()
+	end)
+
+	y = Check(L.OPT_MAP, "mapPins", y, function()
+		ns.Map.Refresh()
+	end)
 
 	local channelButton = Button("", 24, y - 4)
 	channelButton:SetWidth(300)
@@ -192,7 +199,7 @@ function Options.Init()
 		showChannel()
 	end)
 	refreshers[#refreshers + 1] = showChannel
-	y = y - 36
+	y = y - 34
 
 	-- Buttons
 	local show = Button(L.BTN_SHOW, 20, y - 6, function()

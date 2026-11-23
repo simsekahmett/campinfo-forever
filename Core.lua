@@ -21,17 +21,19 @@ local CAMPFIRE_NEARBY_NAME = "campfire nearby"
 local VIOLET_FLAMES = { 1328362, 1328364, 1328367, 1328371, 1328375, 1328376, 1328377 }
 
 -- Each camp feature gives its own buff ("spell"). "place" is the spell that builds the
--- object; its description says what the object gives, with real values.
+-- object; its description says what the object gives, with real values. "ids" are the
+-- placed object's game IDs, and "covered" the class buffs (any rank, matched by name) that
+-- the camp buff does not stack with. All from the game's spell data, build 1.60.1.71037.
 local FEATURES = {
-	{ key = "LODESTONE", place = 1307254, spell = 1230164, name = "Lodestone", icon = "Interface\\Icons\\INV_Stone_15" },
-	{ key = "FIRST_AID", place = 1307244, spell = 1230124, name = "First Aid Kit", icon = "Interface\\Icons\\Spell_Holy_SealOfSacrifice" },
-	{ key = "SHARPENING", place = 1307392, spell = 1230172, name = "Sharpening Wheel", icon = "Interface\\Icons\\INV_Stone_SharpeningStone_01" },
-	{ key = "INCENSE", place = 1307251, spell = 1229513, name = "Incense Candle", icon = "Interface\\Icons\\INV_Misc_Candle_01" },
-	{ key = "BANNER", place = 1307239, placeHorde = 1307240, spell = 1229718, name = "Faction Banner", icon = "Interface\\Icons\\INV_BannerPVP_02" },
-	{ key = "CHAIR", place = 1307229, spell = 1229519, name = "Camp Chair", icon = "Interface\\Icons\\Spell_Nature_Sleep" },
-	{ key = "FISH_BOWL", place = 1307245, spell = 1230098, name = "Fish Bowl", icon = "Interface\\Icons\\INV_Misc_Fish_02" },
-	{ key = "LUTE", place = 1307234, spell = 1230653, name = "Enchanted Lute", icon = "Interface\\Icons\\INV_Misc_Drum_01" },
-	{ key = "MANA_WELL", place = 1307259, spell = 1230587, name = "Mana Well", icon = "Interface\\Icons\\INV_Drink_07" },
+	{ key = "LODESTONE", ids = { 651956, 573385 }, covered = { 19740, 25782 }, place = 1307254, spell = 1230164, name = "Lodestone", icon = "Interface\\Icons\\INV_Stone_15" },
+	{ key = "FIRST_AID", ids = { 651953 }, covered = { 1243, 21562 }, place = 1307244, spell = 1230124, name = "First Aid Kit", icon = "Interface\\Icons\\Spell_Holy_SealOfSacrifice" },
+	{ key = "SHARPENING", ids = { 651950 }, covered = { 8076 }, place = 1307392, spell = 1230172, name = "Sharpening Wheel", icon = "Interface\\Icons\\INV_Stone_SharpeningStone_01" },
+	{ key = "INCENSE", ids = { 651955 }, covered = { 1459, 23028 }, place = 1307251, spell = 1229513, name = "Incense Candle", icon = "Interface\\Icons\\INV_Misc_Candle_01" },
+	{ key = "BANNER", ids = { 612350, 612351 }, covered = { 14752, 27681 }, place = 1307239, placeHorde = 1307240, spell = 1229718, name = "Faction Banner", icon = "Interface\\Icons\\INV_BannerPVP_02" },
+	{ key = "CHAIR", ids = { 612275 }, covered = { 24907 }, place = 1307229, spell = 1229519, name = "Camp Chair", icon = "Interface\\Icons\\Spell_Nature_Sleep" },
+	{ key = "FISH_BOWL", ids = { 651954 }, covered = { 20217, 25898 }, place = 1307245, spell = 1230098, name = "Fish Bowl", icon = "Interface\\Icons\\INV_Misc_Fish_02" },
+	{ key = "LUTE", ids = { 651952 }, covered = { 1126, 21849 }, place = 1307234, spell = 1230653, name = "Enchanted Lute", icon = "Interface\\Icons\\INV_Misc_Drum_01" },
+	{ key = "MANA_WELL", ids = { 651948 }, covered = { 19742, 25894 }, place = 1307259, spell = 1230587, name = "Mana Well", icon = "Interface\\Icons\\INV_Drink_07" },
 }
 ns.FEATURES = FEATURES
 
@@ -40,17 +42,61 @@ ns.FEATURES = FEATURES
 -- "same" means the object gives the same buff as that one (a Loom counts as a banner).
 -- "utility" objects give no buff; their tooltip says what they are for.
 local OTHER_OBJECTS = {
-	{ key = "CAMP_TENT", place = 1307230, name = "Camp Tent", icon = "Interface\\Icons\\INV_Misc_Bag_09" },
-	{ key = "TANNING_RACK", place = 1307395, same = "CAMP_TENT", name = "Tanning Rack", icon = "Interface\\Icons\\Trade_LeatherWorking" },
-	{ key = "LOOM", place = 1307255, same = "BANNER", name = "Loom", icon = "Interface\\Icons\\Trade_Tailoring" },
-	{ key = "IRON_OVEN", place = 1307226, utility = true, name = "Iron Oven", icon = "Interface\\Icons\\INV_Misc_Food_15" },
+	{ key = "CAMP_TENT", place = 1307230, ids = { 528996 }, name = "Camp Tent" },
+	{ key = "FERMENTER", place = 1307242, ids = { 612120 }, same = "MANA_WELL", name = "Fermenter" },
+	{ key = "ALCHEMY_LAB", place = 1307172, ids = { 612139 }, same = "MANA_WELL", name = "Alchemy Laboratory" },
+	{ key = "ANVIL", place = 1307175, ids = { 612125 }, same = "SHARPENING", name = "Anvil" },
+	{ key = "MASTER_FORGE", place = 1307261, ids = { 612136 }, same = "SHARPENING", name = "Master Forge" },
+	{ key = "SALVAGER", place = 1307223, ids = { 612130 }, same = "LUTE", name = "Arcane Salvager" },
+	{ key = "ARCANE_FORGE", place = 1307176, ids = { 612143 }, same = "LUTE", name = "Arcane Forge" },
+	{ key = "GREENHOUSE", place = 1307248, ids = { 612087, 260078 }, same = "INCENSE", name = "Greenhouse" },
+	{ key = "HYBRIDIZER", place = 1307387, ids = { 260105 }, same = "INCENSE", name = "Seed Hybridizer" },
+	{ key = "TANNING_RACK", place = 1307395, ids = { 612122 }, same = "CAMP_TENT", name = "Tanning Rack" },
+	{ key = "SEWING", place = 1307391, ids = { 612140 }, same = "CAMP_TENT", name = "Sewing Machine" },
+	{ key = "ROCK_GARDEN", place = 1307386, ids = { 654285, 259224 }, same = "LODESTONE", name = "Rock Garden" },
+	{ key = "FOUNDRY", place = 1307264, ids = { 612134 }, same = "LODESTONE", name = "Molten Foundry" },
+	{ key = "FIELD_GUIDE", place = 1307243, ids = { 612088 }, same = "CHAIR", name = "Field Guide" },
+	{ key = "TRAPPER", place = 1307397, ids = { 612082 }, same = "CHAIR", name = "Trapper's Workbench" },
+	{ key = "SPINNING", place = 1307393, ids = { 612123 }, same = "BANNER", name = "Spinning Wheel" },
+	{ key = "LOOM", place = 1307255, ids = { 612142 }, same = "BANNER", name = "Loom" },
+	{ key = "TOXIN", place = 1307396, ids = { 612091 }, same = "FIRST_AID", name = "Toxin Study" },
+	{ key = "PLAGUE_LAB", place = 1307265, ids = { 612110 }, same = "FIRST_AID", name = "Plague Doctor's Laboratory" },
+	{ key = "FISHING_RACK", place = 1307247, ids = { 612090 }, same = "FISH_BOWL", name = "Fishing Rack" },
+	{ key = "FISHING_HUT", place = 1307246, ids = { 612092 }, same = "FISH_BOWL", name = "Fishing Hut" },
+	{ key = "REAGENT_BOT", place = 1307266, ids = { 242498 }, utility = true, name = "Reagent Bot" },
+	{ key = "REPAIR_BOT", place = 1307385, ids = { 254695 }, utility = true, name = "Repair Bot" },
+	{ key = "WORKBENCH", place = 1307174, ids = { 612145 }, utility = true, name = "Anarchist's Workbench" },
+	{ key = "FEAST", place = 1307257, ids = { 612073 }, utility = true, name = "Cookie's Feast" },
+	{ key = "IRON_OVEN", place = 1307226, ids = { 612132 }, utility = true, name = "Iron Oven" },
 }
+
+-- Campfires, and how many camp features fit around each.
+local FIRES = {
+	{ place = 1307227, slots = 3, name = "Basic Campfire" },
+	{ place = 1307252, slots = 5, name = "Journeyman Campfire" },
+	{ place = 1307237, slots = 10, name = "Expert Campfire" },
+}
+local FIRE_IDS = { [529161] = 3, [630660] = 5, [650137] = 10 }
+
 local CAMP_OBJECTS = {}
 for _, feature in ipairs(FEATURES) do
 	CAMP_OBJECTS[#CAMP_OBJECTS + 1] = feature
 end
 for _, object in ipairs(OTHER_OBJECTS) do
 	CAMP_OBJECTS[#CAMP_OBJECTS + 1] = object
+end
+local OBJECT_BY_ID, OBJECT_BY_PLACE = {}, {}
+for _, object in ipairs(CAMP_OBJECTS) do
+	for _, id in ipairs(object.ids) do
+		OBJECT_BY_ID[id] = object
+	end
+	OBJECT_BY_PLACE[object.place] = object
+	if object.placeHorde then
+		OBJECT_BY_PLACE[object.placeHorde] = object
+	end
+end
+function ns.ObjectByPlace(spellId)
+	return OBJECT_BY_PLACE[spellId]
 end
 ns.CAMP_BENEFITS = CAMP_BENEFITS
 ns.ICON_UNKNOWN = "Interface\\Icons\\INV_Misc_QuestionMark"
@@ -69,6 +115,8 @@ local DEFAULTS = {
 	shareChannel = "AUTO",
 	announce = false,
 	whisperReply = false,
+	network = true,
+	mapPins = true,
 }
 
 -- Capital cities (Classic map IDs). Camps there do not open the panel on their own.
@@ -136,6 +184,7 @@ local function Unsecret(value)
 	end
 	return value
 end
+ns.Unsecret = Unsecret
 
 ---------------------------------------------------------------------------
 -- Spell and aura helpers
@@ -187,6 +236,9 @@ local function PreloadSpells()
 		if object.spell then load(object.spell) end
 		if object.place then load(object.place) end
 		if object.placeHorde then load(object.placeHorde) end
+	end
+	for _, fire in ipairs(FIRES) do
+		load(fire.place)
 	end
 end
 
@@ -368,13 +420,14 @@ local function FallbackStat(feature)
 	return "+" .. StatName(feature)
 end
 
-local function ObjectByKey(key)
-	for _, object in ipairs(CAMP_OBJECTS) do
-		if object.key == key then
-			return object
-		end
-	end
+local OBJECT_BY_KEY = {}
+for _, object in ipairs(CAMP_OBJECTS) do
+	OBJECT_BY_KEY[object.key] = object
 end
+local function ObjectByKey(key)
+	return OBJECT_BY_KEY[key]
+end
+ns.ObjectByKey = ObjectByKey
 
 -- What an object gives, from the description of the spell that builds it:
 -- "...sitting nearby to gain 20 increased melee Attack Power, mutually exclusive..."
@@ -393,19 +446,51 @@ local function PlaceBenefit(object)
 			or text:match("nearby to (.-)%. ") or text:match("nearby (.-)%. ")
 		if part then
 			part = part:gsub("^gain ", "")
-			return part:sub(1, 1):upper() .. part:sub(2)
+			return part:sub(1, 1):upper() .. part:sub(2), true
 		end
 	end
 	return text:match("^(.-%.)%s") or text
+end
+
+-- What a higher tier object is for besides its buff: the first sentence of its build spell.
+local function PlaceSentence(object)
+	local text = SpellDescription(object.place)
+	return text and (text:match("^(.-%.)%s") or text)
+end
+
+-- The name of a class buff on you that already gives this object's buff, if any.
+local function CoveredBy(object)
+	local target = (object.same and ObjectByKey(object.same)) or object
+	if not target.covered then
+		return nil
+	end
+	local names = {}
+	for _, spellId in ipairs(target.covered) do
+		local name = Unsecret(SpellName(spellId))
+		if name then
+			names[name] = true
+		end
+	end
+	for _, entry in pairs(ScanBuffs()) do
+		local name = Unsecret(entry.aura.name)
+		if name and names[name] then
+			return name
+		end
+	end
 end
 
 -- The buff text for a camp object: what the game showed us, the buff's own text,
 -- the builder spell's text, or just the stat name.
 local function BuffText(object)
 	local target = (object.same and ObjectByKey(object.same)) or object
-	return ns.db.known[object.key] or ns.db.known[target.key]
+	if target.utility then
+		return (PlaceBenefit(target))
+	end
+	-- The build spell's text has the value for your level right now.
+	local benefit, exact = PlaceBenefit(target)
+	return (exact and benefit) or ns.db.known[object.key] or ns.db.known[target.key]
 		or (target.spell and SpellDescription(target.spell))
-		or PlaceBenefit(target)
+		or benefit
 		or (target.spell and FallbackStat(target))
 end
 
@@ -453,21 +538,26 @@ local function ObjectByName(name)
 	local lowered = strtrim(name):lower()
 	for _, object in ipairs(CAMP_OBJECTS) do
 		local label = ns.db.labels[object.key]
-		if object.name:lower() == lowered or (label and label:lower() == lowered) then
+		local localName = Unsecret(SpellName(object.place))
+		if object.name:lower() == lowered or (label and label:lower() == lowered)
+			or (type(localName) == "string" and localName:lower() == lowered) then
 			return object
 		end
 	end
 end
 
--- Called with the name of a world object whose tooltip you looked at. Near a campfire,
--- that object is part of this camp, so the panel can list it before you sit.
-local function SeeObject(name)
-	if not state.nearCampfire then
-		return
-	end
-	local object = ObjectByName(name)
-	if object and not state.seen[object.key] then
+-- A camp object's name in your language: the game's own label, or the build spell's name.
+local function ObjectName(object)
+	local localName = Unsecret(SpellName(object.place))
+	return ns.db.labels[object.key] or (type(localName) == "string" and localName ~= "" and localName) or object.name
+end
+
+-- Called with a camp object whose tooltip you looked at. Near a campfire, that object is
+-- part of this camp, so the panel can list it before you sit.
+local function SeeObject(object)
+	if not state.seen[object.key] then
 		state.seen[object.key] = true
+		ns.Comm.Seen(object.key)
 		ns.Panel.RefreshIfShown()
 	end
 end
@@ -515,25 +605,37 @@ function ns.Snapshot()
 
 	-- Real values from the Camp Benefits tooltip, keyed by feature.
 	local tooltipText, tooltipLabel = {}, {}
+	local campKeys = {} -- every known object Camp Benefits lists
 	if campAura then
 		for _, line in ipairs(AuraTooltipLines(campAura, campIndex)) do
 			local label, text = SplitBenefitLine(line)
 			if label then
-				local feature = MatchFeature(label, text)
+				local named = ObjectByName(label)
+				local base = named and ((named.same and ObjectByKey(named.same)) or named)
+				local feature = (base and base.spell and base) or (not named and MatchFeature(label, text)) or nil
+				local listed = named or feature
+				if listed then
+					campKeys[#campKeys + 1] = listed.key
+				end
 				if feature then
 					tooltipText[feature.spell] = text
 					tooltipLabel[feature.spell] = label
 					-- Remember the game's label and buff text, to name objects and
 					-- show what they give before you sit at the next camp.
-					ns.db.labels[feature.key] = label
-					ns.db.known[feature.key] = text
+					-- A Loom or Fermenter gives a banner's or mana well's buff under its own
+					-- name: that name must not become the label of the banner or well.
+					if not named or named == feature then
+						ns.db.labels[feature.key] = label
+						ns.db.known[feature.key] = text
+					elseif named then
+						ns.db.known[named.key] = text
+					end
 				else
 					-- A feature this version of the addon does not know yet.
-					local object = ObjectByName(label)
-					if object then
-						ns.db.known[object.key] = text
+					if named then
+						ns.db.known[named.key] = text
 					end
-					extras[#extras + 1] = { key = object and object.key, icon = object and object.icon or ns.ICON_UNKNOWN, name = label, text = text, short = text, compact = text }
+					extras[#extras + 1] = { key = named and named.key, icon = named and SpellIcon(named.place) or ns.ICON_UNKNOWN, name = label, text = text, short = text, compact = text }
 				end
 			end
 		end
@@ -573,20 +675,41 @@ function ns.Snapshot()
 		end
 	end
 
-	-- At a campfire: the objects you pointed at, and the buff each gives when you sit.
+	-- At a campfire: the objects you pointed at or other players saw here, and the buff each
+	-- gives when you sit. What others saw may be gone, so it says when it was last seen.
 	local seenRows = {}
 	if campfire then
+		local shared = ns.Comm.CampHere() or {}
 		for _, object in ipairs(CAMP_OBJECTS) do
-			if state.seen[object.key] then
+			if state.seen[object.key] or shared[object.key] then
 				local text = BuffText(object) or L.NO_BUFF_KNOWN
 				local target = (object.same and ObjectByKey(object.same)) or object
 				local short = target.spell and ShortValue(target, text) or text
 				seenRows[#seenRows + 1] = {
-					key = object.key, spellId = object.spell, name = ns.db.labels[object.key] or object.name,
-					icon = (object.spell and SpellIcon(object.spell)) or object.icon,
+					key = object.key, spellId = object.spell or object.place, name = ObjectName(object),
+					icon = SpellIcon(object.place) or object.icon,
 					text = text, short = short, compact = short,
+					status = not state.seen[object.key] and L.LAST_SEEN:format(date("%H:%M", shared[object.key])) or nil,
 				}
 			end
+		end
+	end
+
+	-- Away from camps: the camps other players saw on this map.
+	local nearby = {}
+	if not campfire then
+		for _, camp in ipairs(ns.Comm.Nearby(5)) do
+			local names = {}
+			for _, object in ipairs(CAMP_OBJECTS) do
+				if camp.objects[object.key] then
+					names[#names + 1] = ObjectName(object)
+				end
+			end
+			nearby[#nearby + 1] = {
+				name = ("%.0f, %.0f (%d yd)"):format(camp.x * 100, camp.y * 100, camp.distance),
+				text = table.concat(names, ", "), compact = table.concat(names, ", "),
+				status = L.LAST_SEEN:format(date("%H:%M", camp.at)),
+			}
 		end
 	end
 
@@ -608,7 +731,23 @@ function ns.Snapshot()
 		extras = extras,
 		violet = violet,
 		seen = seenRows,
+		nearby = nearby,
+		campKeys = campKeys,
 	}
+end
+
+-- The objects of a camp for a tooltip: { name, icon, text, at } in the usual order.
+function ns.CampRows(objects)
+	local rows = {}
+	for _, object in ipairs(CAMP_OBJECTS) do
+		if objects[object.key] then
+			rows[#rows + 1] = {
+				name = ObjectName(object), icon = SpellIcon(object.place) or object.icon,
+				text = BuffText(object) or L.NO_BUFF_KNOWN, at = objects[object.key],
+			}
+		end
+	end
+	return rows
 end
 
 local function PrintSummary(info)
@@ -849,6 +988,10 @@ local function Update()
 	state.needsSit = (info.nearCampfire and readable and not fresh) and true or false
 	state.active = newActive
 
+	if refreshedNow and not IsInInstance() then
+		ns.Comm.Confirm(info.campKeys)
+	end
+
 	local settings = ns.db.settings
 	if (arrived or refreshedNow or sitStarted or (info.inCamp and #gained > 0)) and ns.IsOutdoorCamp() then
 		if arrived then
@@ -927,6 +1070,7 @@ local function DebugReport()
 			seenNames[#seenNames + 1] = object.name
 		end
 	end
+	Print("  Sharing: " .. ns.Comm.Status())
 	Print("  Objects pointed at here: " .. (#seenNames > 0 and table.concat(seenNames, ", ") or "none"))
 	if campAura then
 		for _, line in ipairs(AuraTooltipLines(campAura, campIndex)) do
@@ -970,17 +1114,54 @@ local function InitDB()
 	-- The game's label and buff text for each camp object, learned from Camp Benefits.
 	db.labels = db.labels or {}
 	db.known = db.known or {}
+	-- 1.5.0 could save "Loom" as the banner's label: drop labels that name another object.
+	for key, label in pairs(db.labels) do
+		for _, object in ipairs(CAMP_OBJECTS) do
+			if object.key ~= key and type(label) == "string" and object.name:lower() == label:lower() then
+				db.labels[key] = nil
+				db.known[key] = nil
+			end
+		end
+	end
 	ns.db = db
 end
 
--- Learn the camp's objects from the tooltip you get when pointing at one,
--- and from the object your character faces (soft target).
--- Under a camp object's name, add the buff it gives when you sit by the campfire.
-local function AddBuffToTooltip(tooltip, name)
-	local object = ObjectByName(name)
-	if not object or not tooltip or not tooltip.AddLine then
-		return
+-- The game's ID of a world object or creature, from its GUID (the client may hide it).
+local function GuidID(guid)
+	guid = Unsecret(guid)
+	if type(guid) ~= "string" then
+		return nil
 	end
+	local kind, id = guid:match("^(%a+)%-%d+%-%d+%-%d+%-%d+%-(%d+)%-")
+	if kind == "GameObject" or kind == "Creature" or kind == "Vehicle" then
+		return tonumber(id)
+	end
+end
+
+-- The camp object a tooltip is about. Towns have plain anvils and looms: an ID settles it,
+-- and without one only objects near a campfire count. Creatures need the ID, as any
+-- player or pet could have an object's name.
+local function TooltipObject(name, id, isUnit)
+	if id then
+		return OBJECT_BY_ID[id]
+	elseif not isUnit and state.nearCampfire then
+		return ObjectByName(name)
+	end
+end
+
+local function FireSlots(name, id)
+	if id then
+		return FIRE_IDS[id]
+	end
+	for _, fire in ipairs(FIRES) do
+		if name == fire.name or name == Unsecret(SpellName(fire.place)) then
+			return fire.slots
+		end
+	end
+end
+
+-- Under a camp object's name, add the buff it gives when you sit by the campfire.
+local function AddBuffToTooltip(tooltip, object)
 	local logo = "|T" .. ns.LOGO .. ":14:14|t "
 	local text = BuffText(object)
 	if object.utility then
@@ -989,8 +1170,16 @@ local function AddBuffToTooltip(tooltip, name)
 	elseif text and text ~= "" then
 		local target = (object.same and ObjectByKey(object.same)) or object
 		local buff = target.spell and SpellName(target.spell)
-		tooltip:AddLine(logo .. (buff or target.name), 0.3, 1, 0.3)
+		tooltip:AddLine(logo .. (buff or ObjectName(target)), 0.3, 1, 0.3)
 		tooltip:AddLine(text, 1, 1, 1, true)
+		local covered = CoveredBy(object)
+		if covered then
+			tooltip:AddLine(L.COVERED:format(covered), 1, 0.4, 0.3, true)
+		end
+		local use = object.same and PlaceSentence(object)
+		if use then
+			tooltip:AddLine(use, 0.7, 0.7, 0.7, true)
+		end
 	else
 		tooltip:AddLine(logo .. L.NO_BUFF_KNOWN, 0.7, 0.7, 0.7, true)
 	end
@@ -998,18 +1187,55 @@ local function AddBuffToTooltip(tooltip, name)
 end
 
 local function HookObjectTooltips()
-	local function firstLine(tooltip)
-		local name = tooltip and tooltip.GetName and tooltip:GetName()
-		local fs = name and _G[name .. "TextLeft1"]
-		return fs and fs:GetText()
+	local types = Enum and Enum.TooltipDataType
+	if not (TooltipDataProcessor and TooltipDataProcessor.AddTooltipPostCall and types) then
+		return
 	end
-	if TooltipDataProcessor and TooltipDataProcessor.AddTooltipPostCall and Enum and Enum.TooltipDataType and Enum.TooltipDataType.Object then
-		TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Object, function(tooltip, data)
+	local function firstLine(tooltip)
+		local name = tooltip.GetName and tooltip:GetName()
+		local fs = name and _G[name .. "TextLeft1"]
+		return fs and Unsecret(fs:GetText())
+	end
+	local function hook(isUnit)
+		return function(tooltip, data)
+			if not tooltip or not tooltip.AddLine or not ns.db then
+				return
+			end
+			local id = GuidID(data and data.guid)
+			if isUnit and not id then
+				return
+			end
 			local line = data and data.lines and data.lines[1]
 			local name = (line and Unsecret(line.leftText)) or firstLine(tooltip)
-			AddBuffToTooltip(tooltip, name)
-			SeeObject(name)
-		end)
+			local object = TooltipObject(name, id, isUnit)
+			if object then
+				AddBuffToTooltip(tooltip, object)
+				if state.nearCampfire then
+					SeeObject(object)
+				end
+				return
+			end
+			local slots = not isUnit and FireSlots(name, id)
+			if slots then
+				tooltip:AddLine("|T" .. ns.LOGO .. ":14:14|t " .. L.FIRE_SLOTS:format(slots), 0.3, 1, 0.3, true)
+				tooltip:Show()
+			end
+		end
+	end
+	if types.Object then
+		TooltipDataProcessor.AddTooltipPostCall(types.Object, hook(false))
+	end
+	if types.Unit then
+		TooltipDataProcessor.AddTooltipPostCall(types.Unit, hook(true))
+	end
+end
+
+-- Buff values grow with your level, so values learned at another level are dropped.
+local function CheckLevel(level)
+	level = level or UnitLevel("player")
+	if ns.db.knownLevel ~= level then
+		ns.db.knownLevel = level
+		ns.db.known = {}
 	end
 end
 
@@ -1051,12 +1277,16 @@ events:SetScript("OnEvent", function(self, event, arg1, arg2)
 		self:RegisterEvent("PLAYER_ENTERING_WORLD")
 		self:RegisterUnitEvent("UNIT_AURA", "player")
 		self:RegisterEvent("CHAT_MSG_WHISPER")
+		self:RegisterEvent("PLAYER_LEVEL_UP")
 	elseif event == "PLAYER_LOGIN" then
+		CheckLevel()
 		PreloadSpells()
 		HookObjectTooltips()
 		Print(L.LOADED)
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		C_Timer.After(2, Update)
+	elseif event == "PLAYER_LEVEL_UP" then
+		CheckLevel(arg1)
 	elseif event == "UNIT_AURA" then
 		QueueUpdate()
 	elseif event == "CHAT_MSG_WHISPER" then

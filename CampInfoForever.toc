@@ -25,5 +25,7 @@
 
 Locale.lua
 Core.lua
+Comm.lua
 Panel.lua
+Map.lua
 Options.lua
