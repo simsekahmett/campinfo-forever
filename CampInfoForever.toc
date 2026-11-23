@@ -28,4 +28,5 @@ Core.lua
 Comm.lua
 Panel.lua
 Map.lua
+WhatsNew.lua
 Options.lua

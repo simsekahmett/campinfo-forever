@@ -78,6 +78,7 @@ The addon also lists features it doesn't know yet, as long as the game shows the
 | `/cif` | Show or hide the panel |
 | `/cif options` | Open the settings |
 | `/cif reset` | Reset the panel position |
+| `/cif news` | Show what's new in this version |
 | `/cif debug` | Print the camp buff data to chat (useful for bug reports) |
 
 `/campinfo` works too. You can also open the panel from the Addon Compartment menu next to the minimap.

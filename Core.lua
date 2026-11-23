@@ -1248,6 +1248,8 @@ local function SlashHandler(msg)
 	elseif cmd == "reset" then
 		ns.Panel.ResetPosition()
 		Print(L.POS_RESET)
+	elseif cmd == "news" then
+		ns.WhatsNew.Show()
 	elseif cmd == "debug" then
 		DebugReport()
 	else
@@ -1268,6 +1270,7 @@ events:SetScript("OnEvent", function(self, event, arg1, arg2)
 			return
 		end
 		self:UnregisterEvent("ADDON_LOADED")
+		state.firstRun = CampInfoForeverDB == nil
 		InitDB()
 		ns.Options.Init()
 		SLASH_CAMPINFOFOREVER1 = "/cif"
@@ -1283,6 +1286,7 @@ events:SetScript("OnEvent", function(self, event, arg1, arg2)
 		PreloadSpells()
 		HookObjectTooltips()
 		Print(L.LOADED)
+		ns.WhatsNew.Init(state.firstRun)
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		C_Timer.After(2, Update)
 	elseif event == "PLAYER_LEVEL_UP" then

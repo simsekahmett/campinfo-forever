@@ -66,6 +66,9 @@ Camps you visit are shared with other players who use the addon, over a hidden c
 ## Camps on the map
 Camps seen in the last 15 minutes are campfires on the world map, fading as they get older. Point at one for its objects, their buffs and when they were last seen. Opening a zone's map asks other players of the addon about its camps. On by default.
 
+## What's new page
+After an update, a page tells once what the new version brings. `/cif news` shows it again. For a release with news, add an entry on top of `NOTES` in `WhatsNew.lua`.
+
 ## Sharing in chat
 - **Share** button on the panel: posts the camp's active features to your chosen channel, for example `[Camp Info] Ruins of Lordaeron: Faction Banner (Spirit +14); Camp Chair (Crit Chance +2%) - 53 Min left`.
 - **Ask for missing** button: posts the features this camp lacks and asks if anyone can build them.

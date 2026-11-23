@@ -9,7 +9,6 @@ ns.Map = Map
 local PIN = "Interface\\AddOns\\CampInfoForever\\Media\\CampPin"
 local GLOW = "Interface\\AddOns\\CampInfoForever\\Media\\CampGlow"
 local ZONE_SIZE, CONTINENT_SIZE = 32, 20
-local LEVEL = 1900 -- over the map's own art and most of its icons
 
 local pins = {}
 local hooked, ticker
@@ -106,6 +105,16 @@ local function Project(mapID, camp)
 	end
 end
 
+-- The map draws explored areas as frames of their own, from level 2000 up. Its level for
+-- vignettes is above those.
+local function PinLevel()
+	local manager = WorldMapFrame.GetPinFrameLevelsManager and WorldMapFrame:GetPinFrameLevelsManager()
+	local ok, level = pcall(function()
+		return manager:GetValidFrameLevel("PIN_FRAME_LEVEL_VIGNETTE")
+	end)
+	return math.max(ok and type(level) == "number" and level or 0, 2300)
+end
+
 function Map.Refresh()
 	if not hooked then
 		return
@@ -116,6 +125,7 @@ function Map.Refresh()
 		local canvas = WorldMapFrame:GetCanvas()
 		local width, height = canvas:GetSize()
 		local zoom = WorldMapFrame:GetCanvasScale()
+		local level = PinLevel()
 		if not zoom or zoom <= 0 then
 			zoom = 1
 		end
@@ -134,7 +144,7 @@ function Map.Refresh()
 				pin.glow:SetSize(size * 1.9, size * 1.9)
 				pin:ClearAllPoints()
 				pin:SetPoint("CENTER", canvas, "TOPLEFT", x * width * zoom, -y * height * zoom)
-				pin:SetFrameLevel(LEVEL)
+				pin:SetFrameLevel(level)
 				pin.camp = camp
 				pin.art:SetAlpha(0.55 + 0.45 * Freshness(camp.at))
 				pin.count:SetText(camp.mapID == mapID and camp.count or "")
