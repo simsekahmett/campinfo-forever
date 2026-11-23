@@ -29,8 +29,13 @@ Point at a camp object to see the buff it gives:
 | Mana Well | Mana every 5 sec | 1230587 |
 | Campfire (Campfire Nearby buff) | Opens the panel | 1283391 |
 | Violet Flames (campfire) | Campfire effects last longer | 1328362 and others |
+| Camp Tent | Rested experience up to 5% of a level | read from 1307230 |
+| Tanning Rack | Same as Camp Tent (also for leatherworking reagents) | read from 1307395 |
+| Loom | Same as Faction Banner (also for tailoring recipes) | read from 1307255 |
+| Iron Oven | No buff: needed for advanced cooking recipes | read from 1307226 |
 
 The IDs come from the game's own data: the **Camp Benefits** aura (1229741) lists these features in its tooltip.
+Tooltip texts come from the spell that builds each object (1307xxx), whose description gives the real value, for example "20 increased melee Attack Power" for a Lodestone.
 
 ## How it works
 - At a camp you get the Camp Benefits aura. The addon reads its tooltip, so the panel shows the real numbers for your level, such as "Lodestone: Melee Attack Power increased by 20".
@@ -38,7 +43,7 @@ The IDs come from the game's own data: the **Camp Benefits** aura (1229741) list
 - The panel opens on its own when you get the Campfire Nearby buff or reach a camp, or when a new feature starts giving you a buff. It closes when you leave.
 - When you reach a campfire, the panel opens and asks you to sit by the fire for 1 minute. Until then the buffs on you are from your last camp, so the panel does not list them, and Share waits too.
 - While you sit, the panel counts down the minute until the camp's buffs arrive. Then it lists this camp's features.
-- Point your mouse at a camp object (Mana Well, Fish Bowl, ...) and its tooltip shows the buff it gives when you sit by the fire. The game does not tell addons which objects stand around a fire, so this is the way to see them before you sit. Each object you point at near the fire is also listed in the panel under "At this camp" until this camp's buffs arrive.
+- Point your mouse at a camp object (Mana Well, Fish Bowl, Camp Tent, Loom, ...) and its tooltip shows the buff it gives when you sit by the fire. The game does not tell addons which objects stand around a fire, so this is the way to see them before you sit. Each object you point at near the fire is also listed in the panel under "At this camp" until this camp's buffs arrive.
 - It also lists, greyed out, the features this camp does not have, unless "Show only available buffs" is on.
 - If the tooltip shows a feature the addon does not know yet, it is still listed.
 
