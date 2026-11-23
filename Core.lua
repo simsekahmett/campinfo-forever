@@ -483,6 +483,27 @@ local function AppliedAt(aura)
 	end
 end
 
+-- Time left on the sit timer, or nil once it is over. The Welcoming Campfire aura can
+-- linger for a moment after the buffs arrive, with no time left on it.
+local function SittingLeft(welcoming, campAura)
+	if not welcoming then
+		return nil
+	end
+	local started, applied = AppliedAt(welcoming), AppliedAt(campAura)
+	if started and applied and applied >= started then
+		return nil -- Camp Benefits came after you sat down: the sit is done.
+	end
+	local expires = Unsecret(welcoming.expirationTime)
+	if type(expires) == "number" and expires > 0 then
+		if expires - GetTime() < 1 then
+			return nil
+		end
+		local text = RemainingText(welcoming)
+		return (text and text ~= "") and text or nil
+	end
+	return "1 min" -- the client hides the time
+end
+
 function ns.Snapshot()
 	local buffs = ScanBuffs()
 	local campAura, campIndex = FindAura(buffs, CAMP_BENEFITS)
@@ -575,7 +596,7 @@ function ns.Snapshot()
 	return {
 		inCamp = campAura ~= nil or campfire ~= nil or #active > 0 or violet ~= nil,
 		nearCampfire = campfire ~= nil,
-		sitting = welcoming and (RemainingText(welcoming) or "1 min") or nil,
+		sitting = SittingLeft(welcoming, campAura),
 		campStatus = RemainingText(campAura),
 		hasCampAura = campAura ~= nil,
 		campApplied = AppliedAt(campAura),
@@ -940,6 +961,7 @@ local function InitDB()
 	end
 	db.areas = nil -- data from 1.0.0, no longer used
 	db.apiDump = nil -- left by a test build
+	db.spellScan = nil -- left by a test build
 	-- 1.3.0 had the opposite option, "also list missing features".
 	if db.settings.showInactive == false then
 		db.settings.onlyAvailable = true
@@ -991,88 +1013,6 @@ local function HookObjectTooltips()
 	end
 end
 
--- Test: find camp related spells (spellbook + spell id range) and save them to
--- CampInfoForeverDB.spellScan so the buffs of objects we do not know can be looked up.
-local SCAN_FROM, SCAN_TO, SCAN_STEP = 1200000, 1360000, 4000
-local SCAN_BASE_WORDS = { "camp", "tent", "oven", "loom", "tanning" }
-local function ScanSpells()
-	local SCAN_WORDS = {}
-	for _, word in ipairs(SCAN_BASE_WORDS) do
-		SCAN_WORDS[#SCAN_WORDS + 1] = word
-	end
-	for _, object in ipairs(CAMP_OBJECTS) do
-		SCAN_WORDS[#SCAN_WORDS + 1] = object.name:lower()
-	end
-	local found, order = {}, {}
-	local function add(id, name, source)
-		if id and name and not found[id] then
-			found[id] = { name = name, source = source }
-			order[#order + 1] = id
-		end
-	end
-	local function matches(name)
-		local lowered = name:lower()
-		for _, word in ipairs(SCAN_WORDS) do
-			if lowered:find(word, 1, true) then
-				return true
-			end
-		end
-	end
-
-	-- Spellbook: every skill line, every spell in it.
-	local book = C_SpellBook
-	if book and book.GetNumSpellBookSkillLines then pcall(function()
-		for line = 1, book.GetNumSpellBookSkillLines() do
-			local info = book.GetSpellBookSkillLineInfo(line)
-			if info then
-				for slot = info.itemIndexOffset + 1, info.itemIndexOffset + info.numSpellBookItems do
-					local item = book.GetSpellBookItemInfo(slot, Enum.SpellBookSpellBank.Player)
-					if item and item.spellID then
-						add(item.spellID, item.name, "book:" .. tostring(info.name))
-					end
-				end
-			end
-		end
-	end) end
-
-	Print("Scanning spells " .. SCAN_FROM .. "-" .. SCAN_TO .. "...")
-	local id = SCAN_FROM
-	local function finish()
-		local lines = {}
-		for _, spellId in ipairs(order) do
-			local entry = found[spellId]
-			lines[#lines + 1] = spellId .. "\t" .. entry.name .. "\t" .. entry.source .. "\t" .. (SpellDescription(spellId) or "")
-		end
-		ns.db.spellScan = lines
-		Print("Found " .. #lines .. " spells. Type /reload so the game writes them to SavedVariables.")
-	end
-	local function step()
-		local last = math.min(id + SCAN_STEP - 1, SCAN_TO)
-		for spellId = id, last do
-			local name = Unsecret(SpellName(spellId))
-			if name and name ~= "" and matches(name) then
-				add(spellId, name, "id")
-			end
-		end
-		id = last + 1
-		if id <= SCAN_TO then
-			C_Timer.After(0, step)
-			return
-		end
-		-- Ask for the descriptions, then write them a few seconds later.
-		if Spell and Spell.CreateFromSpellID then
-			for _, spellId in ipairs(order) do
-				local spell = Spell:CreateFromSpellID(spellId)
-				if spell.ContinueOnSpellLoad then
-					spell:ContinueOnSpellLoad(function() end)
-				end
-			end
-		end
-		C_Timer.After(3, finish)
-	end
-	step()
-end
-
 local function SlashHandler(msg)
 	local cmd = strtrim((msg or ""):lower())
 	if cmd == "" then
@@ -1084,8 +1024,6 @@ local function SlashHandler(msg)
 		Print(L.POS_RESET)
 	elseif cmd == "debug" then
 		DebugReport()
-	elseif cmd == "spells" then
-		ScanSpells()
 	else
 		Print(L.HELP)
 	end

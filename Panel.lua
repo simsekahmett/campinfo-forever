@@ -240,7 +240,7 @@ local function Layout(info)
 		add("dim", nil, L.NOT_IN_CAMP)
 	end
 
-	if info.sitting then
+	if info.sitting and not ns.state.campFresh then
 		add("dim", nil, "|cffffd100" .. L.SITTING:format(info.sitting) .. "|r")
 	elseif ns.state.needsSit then
 		add("dim", nil, "|cffffd100" .. L.SIT_HINT .. "|r")
