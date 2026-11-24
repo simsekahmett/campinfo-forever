@@ -71,8 +71,8 @@ After an update, a page tells once what the new version brings. `/cif news` show
 
 ## Sharing in chat
 - **Share** button on the panel: posts the camp's active features to your chosen channel, for example `[Camp Info] Ruins of Lordaeron: Faction Banner (Spirit +14); Camp Chair (Crit Chance +2%) - 53 Min left`.
-- **Ask for missing** button: posts the features this camp lacks and asks if anyone can build them.
-- Share channel: automatic (raid > party > say), party, raid, guild or /say. The buttons can use /say because they are clicked.
+- **Ask for missing** button: asks everyone nearby in /say who can build the features this camp lacks, whatever the share channel.
+- Share channel: automatic (raid > party > say), party, raid, guild or /say. Share can use /say because it is clicked.
 - Optional: share the camp's buffs automatically when you get them, in the share channel you chose, for example `[Camp Info] Durotar: Lodestone (Melee Attack Power +12) / Mana Well (Mana every 5 sec +8)`. At most once every 5 minutes per place. The game only allows /say from a click, so with /say chosen the addon uses your group instead.
 - Optional: answer a whispered `!camp` with the camp info.
 

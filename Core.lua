@@ -886,13 +886,17 @@ end
 -- From a button click (a hardware event), so /say is allowed too.
 function ns.Share(kind)
 	local info = ns.Snapshot()
+	-- Whoever is at the camp can build what is missing, so ask everyone nearby.
+	if kind == "missing" then
+		Send(ns.BuildMissingMessages(info), "SAY")
+		return
+	end
 	local channel = ResolveChannel(ns.db.settings.shareChannel, true)
 	if not channel then
 		Print(L.NO_CHANNEL)
 		return
 	end
-	local messages = kind == "missing" and ns.BuildMissingMessages(info) or ns.BuildShareMessages(info)
-	Send(messages, channel)
+	Send(ns.BuildShareMessages(info), channel)
 end
 
 local ANNOUNCE_COOLDOWN = 300

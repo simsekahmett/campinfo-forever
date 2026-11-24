@@ -27,7 +27,7 @@ No more hovering over the Camp Benefits buff and reading long tooltips.
 - **Real numbers for your level.** Values come straight from the game's own Camp Benefits aura, for example *Lodestone: Melee Attack Power +20*.
 - **What's missing.** Features this camp doesn't have yet are listed in grey. You can turn this off with *Show only available buffs*.
 - **Outdoor camps only.** The panel doesn't open by itself in capital cities, dungeons or raids. You can allow capital cities in the settings.
-- **Share in chat.** One click posts the camp's buffs, or asks your group who can build the missing features.
+- **Share in chat.** One click posts the camp's buffs, or asks everyone nearby in /say who can build the missing features.
 - **`!camp` replies (optional).** Anyone who whispers you `!camp` gets the camp info back.
 - **Automatic share (optional).** When the camp's buffs arrive, posts them in your share channel, for example *[Camp Info] Durotar: Lodestone (Melee Attack Power +12) / Mana Well (Mana every 5 sec +8)*. At most once every 5 minutes per place.
 - **Camps shared between players.** Camps you visit are shared with other players who use the addon, over a hidden chat channel (`CampInfoForever`): the camp's position, layer and objects. Before you sit, the panel lists what others saw at this fire with "Last seen: HH:MM". Away from camps, it lists up to five camps seen on your map. Nothing older than 15 minutes is shown, because fires and camp objects last 15 minutes. Other players can see that the messages come from your character. Turn it off with "Share camps I visit with other players of the addon".
