@@ -243,12 +243,18 @@ local function PreloadSpells()
 end
 
 -- Buffs on the player, keyed by spell ID: { aura data, index }.
+-- While the client keeps auras secret, reading them is an error: the second value is
+-- then true, and the buffs are unknown rather than gone.
 local function ScanBuffs()
 	local buffs = {}
 	for i = 1, 40 do
 		local spellId, aura
 		if C_UnitAuras and C_UnitAuras.GetBuffDataByIndex then
-			aura = C_UnitAuras.GetBuffDataByIndex("player", i)
+			local ok, data = pcall(C_UnitAuras.GetBuffDataByIndex, "player", i)
+			if not ok then
+				return {}, true
+			end
+			aura = data
 			if not aura then
 				break
 			end
@@ -594,8 +600,14 @@ local function SittingLeft(welcoming, campAura)
 	return "1 min" -- the client hides the time
 end
 
+local lastSnapshot
+-- The second value is true while auras cannot be read. What was last known is then
+-- returned, so the panel does not go blank.
 function ns.Snapshot()
-	local buffs = ScanBuffs()
+	local buffs, blocked = ScanBuffs()
+	if blocked and lastSnapshot then
+		return lastSnapshot, true
+	end
 	local campAura, campIndex = FindAura(buffs, CAMP_BENEFITS)
 	local campfire = FindCampfire(buffs)
 	local welcoming = FindAura(buffs, WELCOMING_CAMPFIRE)
@@ -716,7 +728,7 @@ function ns.Snapshot()
 	local zone = GetRealZoneText and GetRealZoneText() or GetZoneText() or ""
 	local sub = GetSubZoneText() or ""
 
-	return {
+	local info = {
 		inCamp = campAura ~= nil or campfire ~= nil or #active > 0 or violet ~= nil,
 		nearCampfire = campfire ~= nil,
 		sitting = SittingLeft(welcoming, campAura),
@@ -734,6 +746,10 @@ function ns.Snapshot()
 		nearby = nearby,
 		campKeys = campKeys,
 	}
+	if not blocked then
+		lastSnapshot = info
+	end
+	return info, blocked
 end
 
 -- The objects of a camp for a tooltip: { name, icon, text, at } in the usual order.
@@ -953,8 +969,15 @@ end
 -- Reacting to aura changes
 ---------------------------------------------------------------------------
 
+local QueueUpdate
+
 local function Update()
-	local info = ns.Snapshot()
+	local info, blocked = ns.Snapshot()
+	if blocked then
+		-- Not the same as having left the camp: keep the state and look again later.
+		QueueUpdate(2)
+		return
+	end
 	local newActive = {}
 	local gained = {}
 	for _, row in ipairs(info.active) do
@@ -1032,12 +1055,12 @@ end
 
 -- UNIT_AURA can fire many times in a row; handle it once per frame.
 local pending = false
-local function QueueUpdate()
+function QueueUpdate(delay)
 	if pending then
 		return
 	end
 	pending = true
-	C_Timer.After(0.2, function()
+	C_Timer.After(delay or 0.2, function()
 		pending = false
 		Update()
 	end)
