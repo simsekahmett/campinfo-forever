@@ -833,6 +833,22 @@ local function Pack(prefix, parts, suffix)
 	return messages
 end
 
+-- The time as chat can show it. SecondsToTime writes plurals as "|4Hr:Hr;", which a
+-- font string resolves but chat does not: pick the form by the number before it.
+-- Anything else chat cannot show means the time is left out (nil).
+local function ChatTime(text)
+	if type(text) ~= "string" or text == "" then
+		return nil
+	end
+	text = text:gsub("(%d+)(%s*)|4([^:;|]*):([^;|]*);", function(n, space, one, many)
+		return n .. space .. (tonumber(n) == 1 and one or many)
+	end)
+	if text:find("|", 1, true) then
+		return nil
+	end
+	return text
+end
+
 -- withoutTime leaves out the camp's time left (for the automatic share).
 function ns.BuildShareMessages(info, withoutTime)
 	local prefix = L.SHARE_PREFIX .. " " .. info.place .. ":"
@@ -853,7 +869,8 @@ function ns.BuildShareMessages(info, withoutTime)
 	if #parts == 0 then
 		parts[1] = L.SHARE_NONE
 	end
-	local suffix = (info.campStatus and not withoutTime) and L.SHARE_LEFT:format(info.campStatus) or nil
+	local timeLeft = not withoutTime and ChatTime(info.campStatus)
+	local suffix = timeLeft and L.SHARE_LEFT:format(timeLeft) or nil
 	return Pack(prefix, parts, suffix)
 end
 
